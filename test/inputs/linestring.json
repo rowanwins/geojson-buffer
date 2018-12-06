@@ -1,4 +1,4 @@
-export var linestring = {
+{
   "type": "Feature",
   "properties": {},
   "geometry": {

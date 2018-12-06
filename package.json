@@ -16,42 +16,41 @@
   "license": "MIT",
   "ava": {
     "cache": false,
+    "require": [
+      "@babel/register"
+    ],
     "files": [
       "./test/**/*.spec.js",
       "!./test/harness/**"
-    ],
-    "require": "babel-core/register"
+    ]
   },
   "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/register": "^7.0.0",
     "ava": "^0.19.1",
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-register": "^6.24.1",
-    "babel-runtime": "^6.23.0",
-    "babelrc-rollup": "^3.0.0",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "eslint": "^3.0.0",
     "eslint-plugin-vue-libs": "^1.2.0",
+    "esm": "^3.0.84",
     "file-loader": "^1.1.4",
-    "rollup": "0.65.2",
-    "rollup-plugin-babel": "2.7.1",
+    "load-json-file": "^5.1.0",
+    "rollup": "^0.65.2",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-butternut": "^0.1.0",
     "rollup-plugin-commonjs": "8.4.1",
-    "rollup-plugin-node-resolve": "3.4.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-uglify": "^2.0.1",
     "rollup-watch": "^4.0.0",
     "vue": "^2.5.11",
     "vue-loader": "^13.0.5",
     "vue-template-compiler": "^2.4.4",
     "webpack": "^3.6.0",
-    "webpack-dev-server": "^2.9.1"
+    "webpack-dev-server": "^2.9.1",
+    "write-json-file": "^3.0.2"
   },
   "dependencies": {
-    "polygon-clipping": "0.8.0",
-    "turf": "7.0.0-alpha.1"
+    "polygon-clipping": "^0.8.0"
   }
 }

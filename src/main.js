@@ -2,7 +2,7 @@ import { distanceToDegrees, polygon } from 'turf'
 import { bufferLine } from './bufferLine'
 import { bufferPolygon } from './bufferPolygon'
 import { bufferPoint } from './bufferPoint'
-const polygonClipping = require('polygon-clipping')
+import polygonClipping from 'polygon-clipping'
 
 export function bufferGeoJSON (geojson, distance, units, steps) {
   if (!geojson) throw new Error('feature is required')

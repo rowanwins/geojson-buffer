@@ -1,11 +1,11 @@
+import path from 'path'
 import test from 'ava'
 import { bufferGeoJSON } from '../src/main'
-import { linestring } from './harness/linestring'
-import { linestring as expected } from './outputs/linestring'
+import loadJsonFile from 'load-json-file'
 
-test('Linestring test', t => {
-  const output = bufferGeoJSON(linestring, 1, 'kilometers')
+test('Polyline test', t => {
+  const output = bufferGeoJSON(loadJsonFile.sync(path.join(__dirname, 'inputs') + '/linestring.json'), 1, 'kilometers')
   t.is(output.type, 'Feature')
   t.is(output.geometry.type, 'Polygon')
-  t.deepEqual(output, expected)
+  t.deepEqual(output, loadJsonFile.sync(path.join(__dirname, 'outputs') + '/linestring.json'))
 })

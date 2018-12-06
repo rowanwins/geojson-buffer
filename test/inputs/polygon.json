@@ -1,9 +1,9 @@
-export var polygon = {
-  'type': 'Feature',
-  'properties': {},
-  'geometry': {
-    'type': 'Polygon',
-    'coordinates': [
+{
+  "type": "Feature",
+  "properties": {},
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
       [
         [
           14.414062499999998,

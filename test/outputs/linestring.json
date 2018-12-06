@@ -1,9 +1,9 @@
-export var linestring = {
-  'type': 'Feature',
-  'properties': {},
-  'geometry': {
-    'type': 'Polygon',
-    'coordinates': [
+{
+  "type": "Feature",
+  "properties": {},
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
       [
         [
           52.39672619080485,
