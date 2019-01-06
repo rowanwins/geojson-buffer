@@ -10,7 +10,8 @@
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build:docs": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "rollup -c",
-    "test": "ava"
+    "test": "ava",
+    "test:regen": "cross-env REGEN=true ava"
   },
   "author": "Rowan Winsemius",
   "license": "MIT",
@@ -20,8 +21,7 @@
       "@babel/register"
     ],
     "files": [
-      "./test/**/*.spec.js",
-      "!./test/harness/**"
+      "./test/**/*.spec.js"
     ]
   },
   "devDependencies": {

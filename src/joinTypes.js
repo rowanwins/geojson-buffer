@@ -21,7 +21,6 @@ export function getEnd (endType, coords, distance, bearingNextCoords, bearingPre
 }
 
 export function createRounded (coords, distance, bearingNextCoords, bearingPrevCoords, numSteps) {
-
   var arc = lineArc(point(coords), distance, bearingNextCoords + 90, bearingPrevCoords - 90, {
     steps: numSteps,
     units: 'degrees'
