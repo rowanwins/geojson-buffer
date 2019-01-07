@@ -1,4 +1,4 @@
-import { distanceToDegrees, polygon } from 'turf'
+import { distanceToDegrees, polygon, multiPolygon } from 'turf'
 import { bufferLine } from './bufferLine'
 import { bufferPolygon } from './bufferPolygon'
 import { bufferPoint } from './bufferPoint'
@@ -8,23 +8,26 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
   if (!geojson) throw new Error('feature is required')
   if (distance === undefined || distance === null || isNaN(distance)) throw new Error('distance is required')
 
-  var numSteps = steps || 64
-  var properties = geojson.properties || {}
+  const numSteps = steps || 64
+  const properties = geojson.properties || {}
 
-  var geometry = (geojson.type === 'Feature') ? geojson.geometry : geojson
-  var distance = distanceToDegrees(distance, units)
+  const geometry = (geojson.type === 'Feature') ? geojson.geometry : geojson
+  const distanceDegrees = distanceToDegrees(distance, units)
 
-  var buffered = null
+  let buffered = null
   switch (geometry.type) {
     case 'Polygon':
-      buffered = bufferPolygon(geometry, distance, numSteps)
-      buffered = polygon(polygonClipping.union(buffered.geometry.coordinates)[0])
+    case 'MultiPolygon':
+      buffered = bufferPolygon(geometry, distanceDegrees, numSteps)
+      buffered = buffered.geometry.type === 'Polygon' ? polygon(polygonClipping.union(buffered.geometry.coordinates)[0]) : multiPolygon(polygonClipping.union(buffered.geometry.coordinates))
       break
     case 'LineString':
-      buffered = bufferLine(geometry, distance, numSteps)
+    case 'MultiLineString':
+      buffered = bufferLine(geometry, distanceDegrees, numSteps)
+      buffered = geometry.type === 'LineString' ? polygon(polygonClipping.union(buffered.geometry.coordinates)[0]) : multiPolygon(polygonClipping.union(buffered.geometry.coordinates))
       break
     case 'Point':
-      buffered = bufferPoint(geometry, distance, numSteps)
+      buffered = bufferPoint(geometry, distanceDegrees, numSteps)
   }
   buffered.properties = properties
   return buffered

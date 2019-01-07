@@ -52,4 +52,18 @@ test('Incorrectly winding polygon works', t => {
   const output = bufferGeoJSON(box, 2, 'miles', 10)
   // Remembering that the fist & last point is duplicated in geojson
   t.is(output.geometry.coordinates[0].length, 41)
+
+  // Don't mutate the inputs
+  t.deepEqual(box.geometry.coordinates, [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
+})
+
+test('Polygon with hole works', t => {
+  const boxWithHole = polygon([
+    [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]],
+    [[0.2, 0.2], [0.2, 0.4], [0.4, 0.4], [0.4, 0.2], [0.2, 0.2]]
+  ])
+  const output = bufferGeoJSON(boxWithHole, 2, 'miles', 10)
+
+  t.is(output.geometry.coordinates[0].length, 41)
+  t.is(output.geometry.coordinates[1].length, 5)
 })

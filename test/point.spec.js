@@ -40,7 +40,9 @@ test('Ensure sensible distance - Northern latitudes', t => {
   })
   t.is(dist > 0.99999 && dist < 1.00001, true)
 
-  const dist2 = distance(northernPoint, point(output.geometry.coordinates[0][30]), {
+  // Somewhere a quarter of the way around the buffer
+  const numCoords = Math.floor(output.geometry.coordinates[0].length / 4)
+  const dist2 = distance(northernPoint, point(output.geometry.coordinates[0][numCoords]), {
     units: 'kilometers'
   })
   t.is(dist2 > 0.99999 && dist2 < 1.00001, true)

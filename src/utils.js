@@ -49,3 +49,7 @@ export function checkLineIntersection (line1StartX, line1StartY, line1EndX, line
   if (a > 0 && a < 1) result.onLine1 = true
   return result
 }
+
+export function getInverseDistance (dist) {
+  return dist > 0 ? -Math.abs(dist) : Math.abs(dist)
+}

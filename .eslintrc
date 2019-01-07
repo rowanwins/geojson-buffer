@@ -1,12 +1,3 @@
 {
-  "extends": ["plugin:vue-libs/recommended"],
-  "rules": {
-    "padded-blocks": "off",
-    "no-console": "off",
-    "no-redeclare": "off"
-  },
-  "globals": {
-    "L": true,
-    "turf": true
-  }
+  "extends": "standard"
 }
