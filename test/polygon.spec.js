@@ -25,7 +25,7 @@ test('Distance parameter works', t => {
   const output = bufferGeoJSON(box, 2, 'kilometers')
 
   // Remembering that it's the 2nd point of the output is actually closest to the first point of the input
-  const dist = distance(point(box.geometry.coordinates[0][0]), point(output.geometry.coordinates[0][1]), {
+  const dist = distance(point(box.geometry.coordinates[0][0]), point(output.geometry.coordinates[0][output.geometry.coordinates[0].length - 2]), {
     units: 'kilometers'
   })
   t.is(dist > 1.99999 && dist < 2.00001, true)
@@ -34,7 +34,7 @@ test('Distance parameter works', t => {
 test('Units parameter works', t => {
   const box = polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'miles')
-  const dist = distance(point(box.geometry.coordinates[0][0]), point(output.geometry.coordinates[0][1]), {
+  const dist = distance(point(box.geometry.coordinates[0][0]), point(output.geometry.coordinates[0][output.geometry.coordinates[0].length - 2]), {
     units: 'miles'
   })
   t.is(dist > 1.99999 && dist < 2.00001, true)

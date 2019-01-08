@@ -46,6 +46,7 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
+    contentBase: path.join(__dirname, 'debug'),
     historyApiFallback: true,
     noInfo: true,
     overlay: true

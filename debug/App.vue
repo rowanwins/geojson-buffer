@@ -1,16 +1,13 @@
 <template>
   <div id="app">
     <div id="map"></div>
-
+    <button v-on:click="runBuffer" class="bufferBtn">Run Buffer</button>
   </div>
 </template>
 
 <script>
 
-import { polygon } from '../test/harness/polygon'
-import { polygonCollection } from '../test/harness/polygonCollection'
-import { australia } from '../test/harness/australia'
-import { Graph } from '../src/main'
+import { bufferGeoJSON } from '../src/main'
 
 export default {
   name: 'app',
@@ -22,13 +19,153 @@ export default {
       zoom: 2,
       crs: L.CRS.Simple
     })
-    var selectionLayer = L.layerGroup([]).addTo(map)
-
-
-    var polyLayer = L.geoJson(australia).addTo(map)
-    map.fitBounds(polyLayer.getBounds(), {
-      padding: [20, 20]
-    })
+    const out = bufferGeoJSON({
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              14.414062499999998,
+              12.897489183755892
+            ],
+            [
+              3.515625,
+              8.754794702435618
+            ],
+            [
+              7.734374999999999,
+              -1.4061088354351594
+            ],
+            [
+              11.6015625,
+              4.915832801313164
+            ],
+            [
+              10.8984375,
+              -9.79567758282973
+            ],
+            [
+              14.414062499999998,
+              -3.162455530237848
+            ],
+            [
+              18.6328125,
+              2.1088986592431382
+            ],
+            [
+              16.5234375,
+              5.61598581915534
+            ],
+            [
+              19.335937499999996,
+              8.754794702435618
+            ],
+            [
+              28.4765625,
+              13.239945499286312
+            ],
+            [
+              24.960937499999996,
+              16.636191878397664
+            ],
+            [
+              22.148437499999996,
+              13.239945499286312
+            ],
+            [
+              20.390625,
+              19.973348786110602
+            ],
+            [
+              18.28125,
+              10.833305983642491
+            ],
+            [
+              14.414062499999998,
+              12.897489183755892
+            ]
+          ]
+        ]
+      }
+    }, 1, 'miles')
+    L.geoJSON(out).addTo(map)
+  },
+  methods: {
+    runBuffer () {
+     const out = bufferGeoJSON({
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              14.414062499999998,
+              12.897489183755892
+            ],
+            [
+              3.515625,
+              8.754794702435618
+            ],
+            [
+              7.734374999999999,
+              -1.4061088354351594
+            ],
+            [
+              11.6015625,
+              4.915832801313164
+            ],
+            [
+              10.8984375,
+              -9.79567758282973
+            ],
+            [
+              14.414062499999998,
+              -3.162455530237848
+            ],
+            [
+              18.6328125,
+              2.1088986592431382
+            ],
+            [
+              16.5234375,
+              5.61598581915534
+            ],
+            [
+              19.335937499999996,
+              8.754794702435618
+            ],
+            [
+              28.4765625,
+              13.239945499286312
+            ],
+            [
+              24.960937499999996,
+              16.636191878397664
+            ],
+            [
+              22.148437499999996,
+              13.239945499286312
+            ],
+            [
+              20.390625,
+              19.973348786110602
+            ],
+            [
+              18.28125,
+              10.833305983642491
+            ],
+            [
+              14.414062499999998,
+              12.897489183755892
+            ]
+          ]
+        ]
+      }
+      }, 1, 'miles')
+    }
   }
 }
 </script>
@@ -40,18 +177,9 @@ export default {
       margin: 0px;
     }
 
-  .leaflet-div-icon {
-    background: white;
-    border: 2px solid;
-    border-radius:  60%;
-  }
-
-  .leaflet-marker-icon .number{
-    position: relative;
-    top: 4px;
-    font-size: 12px;
-    width: 2 6px;
-    height: 2 6px;
-    text-align: center;
+  .bufferBtn{
+    position: absolute;
+    top: 10px;
+    right: 20px;
   }
 </style>

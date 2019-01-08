@@ -1,4 +1,4 @@
-import { distanceToDegrees, polygon, multiPolygon } from 'turf'
+import { distanceToDegrees, polygon, kinks, multiPolygon } from 'turf'
 import { bufferLine } from './bufferLine'
 import { bufferPolygon } from './bufferPolygon'
 import { bufferPoint } from './bufferPoint'
@@ -19,16 +19,28 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
     case 'Polygon':
     case 'MultiPolygon':
       buffered = bufferPolygon(geometry, distanceDegrees, numSteps)
-      buffered = buffered.geometry.type === 'Polygon' ? polygon(polygonClipping.union(buffered.geometry.coordinates)[0]) : multiPolygon(polygonClipping.union(buffered.geometry.coordinates))
+      // if (checkforOverlaps(buffered)) {
+      //   buffered = polygonClipping.union(buffered.geometry.coordinates)
+      //   buffered = geometry.type === 'Polygon' ? polygon(buffered[0]) : multiPolygon(buffered)
+      // }
       break
     case 'LineString':
     case 'MultiLineString':
       buffered = bufferLine(geometry, distanceDegrees, numSteps)
-      buffered = geometry.type === 'LineString' ? polygon(polygonClipping.union(buffered.geometry.coordinates)[0]) : multiPolygon(polygonClipping.union(buffered.geometry.coordinates))
+      if (checkforOverlaps(buffered)) {
+        buffered = polygonClipping.union(buffered.geometry.coordinates)
+        buffered = geometry.type === 'LineString' ? polygon(buffered[0]) : multiPolygon(buffered)
+      }
       break
     case 'Point':
       buffered = bufferPoint(geometry, distanceDegrees, numSteps)
   }
   buffered.properties = properties
   return buffered
+}
+
+function checkforOverlaps (geom) {
+  const ips = kinks(geom)
+  if (ips.features.length > 0) return true
+  return false
 }
