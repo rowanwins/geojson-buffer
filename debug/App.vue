@@ -1,185 +1,79 @@
 <template>
-  <div id="app">
-    <div id="map"></div>
-    <button v-on:click="runBuffer" class="bufferBtn">Run Buffer</button>
-  </div>
+    <Row id="app">
+      <Col span="6" class="sidebar">
+        <Slider v-model="slideVal" :tip-format="format" :min="-50" :max="50" :step="1" @on-change="setBuffer"></Slider>
+        <h3>Buffer distance</h3>
+
+      </Col>
+      <Col span="18">
+        <div id="map"></div>
+      </Col>
+  </Row>
 </template>
 
 <script>
-
+import { gj } from './demoFeatures'
 import { bufferGeoJSON } from '../src/main'
 
+let map = null
+let buffered = null
 export default {
   name: 'app',
+  data: function () {
+    return {
+      slideVal: 10
+    }
+  },
   mounted () {
-    var map = window.map = L.map('map', {
+    map = L.map('map', {
       minZoom: 1,
       maxZoom: 20,
       center: [0, 0],
       zoom: 2,
       crs: L.CRS.Simple
     })
-    const out = bufferGeoJSON({
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              14.414062499999998,
-              12.897489183755892
-            ],
-            [
-              3.515625,
-              8.754794702435618
-            ],
-            [
-              7.734374999999999,
-              -1.4061088354351594
-            ],
-            [
-              11.6015625,
-              4.915832801313164
-            ],
-            [
-              10.8984375,
-              -9.79567758282973
-            ],
-            [
-              14.414062499999998,
-              -3.162455530237848
-            ],
-            [
-              18.6328125,
-              2.1088986592431382
-            ],
-            [
-              16.5234375,
-              5.61598581915534
-            ],
-            [
-              19.335937499999996,
-              8.754794702435618
-            ],
-            [
-              28.4765625,
-              13.239945499286312
-            ],
-            [
-              24.960937499999996,
-              16.636191878397664
-            ],
-            [
-              22.148437499999996,
-              13.239945499286312
-            ],
-            [
-              20.390625,
-              19.973348786110602
-            ],
-            [
-              18.28125,
-              10.833305983642491
-            ],
-            [
-              14.414062499999998,
-              12.897489183755892
-            ]
-          ]
-        ]
-      }
-    }, 1, 'miles')
-    L.geoJSON(out).addTo(map)
+    const orig = L.geoJSON(gj, {
+      style: function (feature) {
+        return {
+          color: '#333333',
+          opacity: 0.4
+        };
+      }    
+    }).addTo(map)
+    map.fitBounds(orig.getBounds())
+    buffered = L.geoJSON([]).addTo(map)
+    this.setBuffer()
   },
   methods: {
-    runBuffer () {
-     const out = bufferGeoJSON({
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              14.414062499999998,
-              12.897489183755892
-            ],
-            [
-              3.515625,
-              8.754794702435618
-            ],
-            [
-              7.734374999999999,
-              -1.4061088354351594
-            ],
-            [
-              11.6015625,
-              4.915832801313164
-            ],
-            [
-              10.8984375,
-              -9.79567758282973
-            ],
-            [
-              14.414062499999998,
-              -3.162455530237848
-            ],
-            [
-              18.6328125,
-              2.1088986592431382
-            ],
-            [
-              16.5234375,
-              5.61598581915534
-            ],
-            [
-              19.335937499999996,
-              8.754794702435618
-            ],
-            [
-              28.4765625,
-              13.239945499286312
-            ],
-            [
-              24.960937499999996,
-              16.636191878397664
-            ],
-            [
-              22.148437499999996,
-              13.239945499286312
-            ],
-            [
-              20.390625,
-              19.973348786110602
-            ],
-            [
-              18.28125,
-              10.833305983642491
-            ],
-            [
-              14.414062499999998,
-              12.897489183755892
-            ]
-          ]
-        ]
-      }
-      }, 1, 'miles')
+    format: function (val) {
+      return 'Distance: ' + val + ' metres';
+    },
+    setBuffer: function () {
+      buffered.clearLayers()
+      gj.features.forEach(function (f) {
+        if (this.slideVal < 0 && f.geometry.type === 'Polygon') {
+          this.bufferFeature(f)    
+        } else if (this.slideVal > 0) {   
+          this.bufferFeature(f)    
+        }
+
+      }, this)
+    },
+    bufferFeature: function (f) {
+      const out = bufferGeoJSON(f, this.slideVal, 'meters')
+      buffered.addData(out)   
     }
   }
 }
 </script>
 
 <style>
-    html, body, #app, #map {
-      width: 100%;
+    html, body, #app, .ivu-col, #map {
       height: 100%;
       margin: 0px;
     }
+    .sidebar{
+      padding: 50px;
+    }
 
-  .bufferBtn{
-    position: absolute;
-    top: 10px;
-    right: 20px;
-  }
 </style>

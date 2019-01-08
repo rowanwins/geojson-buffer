@@ -18,23 +18,31 @@ export function bufferPolygon (geometry, distance, steps) {
           reverse: true
         })
       }
-      outCoords[multiFeatureIndex].push(processContour(contour, distance, steps))
+      outCoords[multiFeatureIndex].push(processContour(contour, distance, steps, true))
     } else {
       if (!booleanClockwise(contour.geometry.coordinates)) {
         contour = rewind(contour, {
           reverse: true
         })
       }
-      outCoords[multiFeatureIndex].push(processContour(contour, getInverseDistance(distance), steps))
+
+      if (distance < 0) {
+        contour = rewind(contour, {
+          reverse: true
+        })
+      }
+
+      outCoords[multiFeatureIndex].push(processContour(contour, getInverseDistance(distance), steps, false))
     }
   })
 
-  return inType === 'Polygon' ? polygon(outCoords[0]) : multiPolygon(outCoords)
+  return outCoords.length === 1 ? polygon(outCoords[0]) : multiPolygon(outCoords)
 }
 
-function processContour (contour, distance, steps) {
+function processContour (contour, distance, steps, isExternalRing) {
   const coords = getCoords(contour)
   let outCoords = []
+  // To do - Handle the first and last points point independently
   coordEach(contour, function (currentCoords, index) {
     if (index > 0) {
       const prevCoords = coords[index - 1]
@@ -43,9 +51,14 @@ function processContour (contour, distance, steps) {
       const bearingNextCoords = bearing(point(currentCoords), point(nextCoords))
       const angleInDegs = bearingToAngle(bearingToAngle(bearingNextCoords) - bearingToAngle(bearingPrevCoords))
 
-      if (angleInDegs < 180) {
+      if (angleInDegs < 180 && distance > 0) {
         const outsector = getJoin('round', currentCoords, distance, bearingNextCoords, bearingPrevCoords, steps)
         outCoords = outCoords.concat(outsector)
+      } else if (!isExternalRing && distance < 0) {
+        const segment = processSegment(nextCoords, currentCoords, distance)
+        const prevSegment = processSegment(currentCoords, prevCoords, distance)
+        const intersects = checkLineIntersection(segment[0][0], segment[0][1], segment[1][0], segment[1][1], prevSegment[0][0], prevSegment[0][1], prevSegment[1][0], prevSegment[1][1])
+        outCoords.push([intersects.x, intersects.y])
       } else {
         const segment = processSegment(currentCoords, nextCoords, distance)
         const prevSegment = processSegment(prevCoords, currentCoords, distance)

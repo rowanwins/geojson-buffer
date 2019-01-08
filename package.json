@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "bench": "node test/benchmark.js",
+    "bench": "npm run build && node test/benchmark.js",
     "build:docs": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "rollup -c",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
@@ -42,6 +42,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "esm": "^3.0.84",
     "file-loader": "^1.1.4",
+    "iview": "^3.2.1",
     "jsts": "^2.0.3",
     "load-json-file": "^5.1.0",
     "polygon-offset": "^0.3.1",

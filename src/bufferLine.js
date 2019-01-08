@@ -16,7 +16,7 @@ export function bufferLine (geometry, distance, steps, endType, joinType) {
     outCoords[multiFeatureIndex].push(processContour(contour, distance, steps))
   })
 
-  return inType === 'LineString' ? polygon(outCoords[0]) : multiPolygon(outCoords)
+  return outCoords.length === 1 ? polygon(outCoords[0]) : multiPolygon(outCoords)
 }
 
 function processContour (contour, distance, steps) {
