@@ -4,6 +4,9 @@
         <Slider v-model="slideVal" :tip-format="format" :min="-50" :max="50" :step="1" @on-change="setBuffer"></Slider>
         <h3>Buffer distance</h3>
 
+        <br><br><br>
+        <Slider v-model="steps" :min="1" :max="100" :step="1" @on-change="setBuffer"></Slider>
+        <h3>Steps on curved joins</h3>
       </Col>
       <Col span="18">
         <div id="map"></div>
@@ -21,7 +24,8 @@ export default {
   name: 'app',
   data: function () {
     return {
-      slideVal: 10
+      slideVal: 10,
+      steps: 32
     }
   },
   mounted () {
@@ -60,7 +64,7 @@ export default {
       }, this)
     },
     bufferFeature: function (f) {
-      const out = bufferGeoJSON(f, this.slideVal, 'meters')
+      const out = bufferGeoJSON(f, this.slideVal, 'meters', this.steps)
       buffered.addData(out)   
     }
   }

@@ -4,7 +4,7 @@ import { bufferGeoJSON } from '../src/main'
 import loadJsonFile from 'load-json-file'
 import write from 'write-json-file'
 
-import { point, lineString, pointToLineDistance, polygonToLine } from 'turf'
+import { point, lineString, distance } from 'turf'
 
 const lineHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'linestring.json'))
 const lineTouchingHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'linestringTouching.json'))
@@ -30,30 +30,30 @@ test('MultiLine test', t => {
   t.deepEqual(output, expected)
 })
 
-// test('Polyline touching test', t => {
-//   const output = bufferGeoJSON(lineTouchingHarness, 10, 'kilometers')
-//   t.is(output.type, 'Feature')
-//   t.is(output.geometry.type, 'Polygon')
+test('Polyline touching test', t => {
+  const output = bufferGeoJSON(lineTouchingHarness, 10, 'kilometers')
+  t.is(output.type, 'Feature')
+  t.is(output.geometry.type, 'Polygon')
 
-//   if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'), output)
-//   const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'))
-//   t.deepEqual(output, expected)
-// })
+  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'), output)
+  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'))
+  t.deepEqual(output, expected)
+})
 
 test('Distance parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'kilometers')
-  const dist = pointToLineDistance(point(lineHarness.geometry.coordinates[0]), polygonToLine(output), {
+  const dist = distance(point(lineHarness.geometry.coordinates[0]), point(output.geometry.coordinates[0][32]), {
     units: 'kilometers'
   })
-  t.is(dist > 1.999 && dist < 2.001, true)
+  t.is(dist > 1.95 && dist < 2.05, true)
 })
 
 test('Units parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'miles')
-  const dist = pointToLineDistance(point(lineHarness.geometry.coordinates[0]), polygonToLine(output), {
+  const dist = distance(point(lineHarness.geometry.coordinates[0]), point(output.geometry.coordinates[0][32]), {
     units: 'miles'
   })
-  t.is(dist > 1.999 && dist < 2.001, true)
+  t.is(dist > 1.95 && dist < 2.05, true)
 })
 
 test('Steps parameter works', t => {

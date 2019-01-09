@@ -23,7 +23,6 @@ test('Polygon test', t => {
 test('Distance parameter works', t => {
   const box = polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'kilometers')
-
   // Remembering that it's the 2nd point of the output is actually closest to the first point of the input
   const dist = distance(point(box.geometry.coordinates[0][0]), point(output.geometry.coordinates[0][output.geometry.coordinates[0].length - 2]), {
     units: 'kilometers'
@@ -64,6 +63,7 @@ test('Steps parameter works', t => {
 test('Incorrectly winding polygon works', t => {
   const box = polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'miles', 10)
+
   // Remembering that the fist & last point is duplicated in geojson
   t.is(output.geometry.coordinates[0].length, 41)
 
@@ -77,7 +77,6 @@ test('Polygon with hole works', t => {
     [[0.2, 0.2], [0.2, 0.4], [0.4, 0.4], [0.4, 0.2], [0.2, 0.2]]
   ])
   const output = bufferGeoJSON(boxWithHole, 2, 'miles', 10)
-
   t.is(output.geometry.coordinates[0].length, 41)
   t.is(output.geometry.coordinates[1].length, 5)
 })

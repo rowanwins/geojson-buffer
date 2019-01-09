@@ -24,10 +24,11 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
     case 'Polygon':
     case 'MultiPolygon':
       buffered = bufferPolygon(geometry, distanceDegrees, numSteps)
-      if (checkforOverlaps(buffered)) {
-        buffered = polygonClipping.union(buffered.geometry.coordinates)
-        buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
-      }
+      // To do - find a way to make this check faster...
+      // if (checkforOverlaps(buffered)) {
+      //   buffered = polygonClipping.union(buffered.geometry.coordinates)
+      //   buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
+      // }
       break
     case 'LineString':
     case 'MultiLineString':
