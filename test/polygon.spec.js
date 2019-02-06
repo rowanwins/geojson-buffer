@@ -20,6 +20,20 @@ test('Polygon test', t => {
   t.deepEqual(output, expected)
 })
 
+const polygonCloseInOutHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'polygonCloseInOut.json'))
+
+test('Polygon test', t => {
+  const output = bufferGeoJSON(polygonCloseInOutHarness, 10, 'kilometers')
+  t.is(output.type, 'Feature')
+  t.is(output.geometry.type, 'Polygon')
+
+  t.is(booleanPointInPolygon(point(output.geometry.coordinates[0][0]), polygonCloseInOutHarness), false)
+
+  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'polygonCloseInOut.json'), output)
+  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'polygonCloseInOut.json'))
+  t.deepEqual(output, expected)
+})
+
 test('Distance parameter works', t => {
   const box = polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'kilometers')

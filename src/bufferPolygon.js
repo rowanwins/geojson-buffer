@@ -1,4 +1,4 @@
-import { bearing, point, polygon, multiPolygon, bearingToAngle, booleanClockwise } from 'turf'
+import { bearing, point, polygon, multiPolygon, bearingToAngle, booleanClockwise, distance as calcDistance } from 'turf'
 import { processSegment, checkLineIntersection, getInverseDistance } from './utils'
 import { getJoin } from './joinTypes'
 
@@ -8,10 +8,10 @@ export function bufferPolygon (geometry, distance, steps) {
 
   const coordsToProcess = inType === 'Polygon' ? [geometry.coordinates] : geometry.coordinates
 
-  for (var i = 0; i < coordsToProcess.length; i++) {
+  for (let i = 0; i < coordsToProcess.length; i++) {
     const outPoly = []
 
-    for (var ii = 0; ii < coordsToProcess[i].length; ii++) {
+    for (let ii = 0; ii < coordsToProcess[i].length; ii++) {
       const contour = coordsToProcess[i][ii]
       const isOuterRing = ii === 0
       const processingDistance = isOuterRing ? distance : getInverseDistance(distance)
@@ -24,7 +24,7 @@ export function bufferPolygon (geometry, distance, steps) {
     }
     outCoords.push(outPoly)
   }
-  return outCoords.length === 1 ? polygon(outCoords[0]) : multiPolygon(outCoords)
+  return inType === 'Polygon' ? polygon(outCoords[0]) : multiPolygon(outCoords)
 }
 
 function processContour (contour, distance, steps, isOuterRing, isClockwise) {
@@ -34,14 +34,14 @@ function processContour (contour, distance, steps, isOuterRing, isClockwise) {
   let shouldNavigateForward = isOuterRing && !isClockwise
 
   if (shouldNavigateForward) {
-    for (var i = 1; i < coords.length; i++) {
+    for (let i = 1; i < coords.length; i++) {
       const currentCoords = coords[i]
       const prevCoords = coords[i - 1]
       const nextCoords = i === coords.length - 1 ? coords[1] : coords[i + 1]
       outCoords = offSetContour(currentCoords, prevCoords, nextCoords, distance, steps, outCoords)
     }
   } else {
-    for (var ii = coords.length - 2; ii >= 0; ii--) {
+    for (let ii = coords.length - 2; ii >= 0; ii--) {
       const currentCoords = coords[ii]
       const prevCoords = coords[ii + 1]
       const nextCoords = ii === 0 ? coords[coords.length - 2] : coords[ii - 1]
@@ -62,6 +62,13 @@ function offSetContour (currentCoords, prevCoords, nextCoords, distance, steps, 
     const outsector = getJoin('round', currentCoords, distance, bearingNextCoords, bearingPrevCoords, steps)
     outCoords = outCoords.concat(outsector)
   } else {
+    const segDistance = calcDistance(point(currentCoords), point(nextCoords), {
+      units: 'degrees'
+    })
+    if (segDistance < distance) {
+      console.log(segDistance, distance)
+      return outCoords
+    }
     const segment = processSegment(currentCoords, nextCoords, distance)
     const prevSegment = processSegment(prevCoords, currentCoords, distance)
     const intersects = checkLineIntersection(segment[0][0], segment[0][1], segment[1][0], segment[1][1], prevSegment[0][0], prevSegment[0][1], prevSegment[1][0], prevSegment[1][1])
