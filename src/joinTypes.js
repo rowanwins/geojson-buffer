@@ -1,64 +1,59 @@
-import { lineArc, point, destination } from 'turf'
+import Point from './Point'
+import { destination } from './utils'
 
-export function getJoin (joinType, coords, distance, bearingNextCoords, bearingPrevCoords, numSteps) {
-  switch (joinType) {
+export function getJoin (joinType, coords, distance, distanceRadians, bearingNextCoords, bearingPrevCoords, numSteps) {
+    switch (joinType) {
     case 'round':
-      return createRounded(coords, distance, bearingNextCoords, bearingPrevCoords, numSteps)
-    // case 'mitre':
-    //   return createMitre(feature, distance, numSteps)
-  }
+        return createRounded(coords, distance, distanceRadians, bearingNextCoords, bearingPrevCoords, numSteps)
+      // case 'mitre':
+      //   return createMitre(feature, distance, numSteps)
+    }
 }
 
-export function getEnd (endType, coords, distance, bearingNextCoords, bearingPrevCoords, numSteps) {
-  switch (endType) {
+export function getEnd (endType, coords, distance, distanceRadians, bearingNextCoords, bearingPrevCoords, numSteps) {
+    switch (endType) {
     case 'round':
-      return createRounded(coords, distance, bearingNextCoords, bearingPrevCoords, numSteps)
+        return createRounded(coords, distance, distanceRadians, bearingNextCoords, bearingPrevCoords, numSteps)
     case 'square':
-      return createSquare()
+        return createSquare()
     case 'flat':
-      return createFlat(coords)
-  }
+        return createFlat(coords)
+    }
 }
 
-export function createRounded (coords, distance, bearingNextCoords, bearingPrevCoords, numSteps) {
-  return createArc(coords, distance, destination(coords, distance, bearingPrevCoords - 90).geometry.coordinates, destination(coords, distance, bearingNextCoords + 90).geometry.coordinates, numSteps, false)
-  // var arc = lineArc(point(coords), distance, bearingNextCoords + 90, bearingPrevCoords - 90, {
-  //   steps: numSteps,
-  //   units: 'degrees'
-  // })
-  // return arc.geometry.coordinates.reverse()
+export function createRounded (coords, distance, distanceRadians, bearingNextCoords, bearingPrevCoords, numSteps) {
+    return createArc(coords, distance, bearingPrevCoords, bearingNextCoords, numSteps, false)
 }
 
 function createArc (center, radius, startVertex, endVertex, segments, outwards) {
-  const outVertices = []
+    const outVertices = []
+    const PI2 = Math.PI * 2
+    let startAngle = Math.atan2(startVertex.y - center.y, startVertex.x - center.x)
+    let endAngle = Math.atan2(endVertex.y - center.y, endVertex.x - center.x)
 
-  const PI2 = Math.PI * 2
-  let startAngle = Math.atan2(startVertex[1] - center[1], startVertex[0] - center[0])
-  let endAngle = Math.atan2(endVertex[1] - center[1], endVertex[0] - center[0])
+    if (startAngle < 0) startAngle += PI2
+    if (endAngle < 0) endAngle += PI2
 
-  if (startAngle < 0) startAngle += PI2
-  if (endAngle < 0) endAngle += PI2
+    var angle = ((startAngle > endAngle)
+        ? (startAngle - endAngle)
+        : (startAngle + PI2 - endAngle))
 
-  var angle = ((startAngle > endAngle)
-    ? (startAngle - endAngle)
-    : (startAngle + PI2 - endAngle))
+    const segmentAngle = (PI2 - angle) / segments
 
-  const segmentAngle = (PI2 - angle) / segments
-
-  for (var i = 1; i < segments + 1; ++i) {
-    angle = startAngle + segmentAngle * i
-    outVertices.push([
-      center[0] + Math.cos(angle) * radius,
-      center[1] + Math.sin(angle) * radius
-    ])
-  }
-  return outVertices
+    for (var i = 1; i < segments + 1; ++i) {
+        angle = startAngle + segmentAngle * i
+        outVertices.push(new Point([
+            center.x + Math.cos(angle) * radius,
+            center.y + Math.sin(angle) * radius
+        ]))
+    }
+    return outVertices
 }
 
 function createSquare () {
-  return []
+    return []
 }
 
 function createFlat (coords) {
-  return []
+    return []
 }

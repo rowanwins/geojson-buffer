@@ -1,18 +1,13 @@
 import test from 'ava'
-import { getInverseDistance } from '../src/utils'
+import Point from '../src/Point'
+import { destination, lengthToRadians } from '../src/utils'
 
-test('Inverting test', t => {
-  const inverted = getInverseDistance(1)
-  t.is(inverted, -1)
+test('Destination test', t => {
+    const p1 = new Point([0, 0])
+    const radiansDistance = lengthToRadians(10, 'degrees')
+    const bearing = 90
 
-  const inverted2 = getInverseDistance(-1)
-  t.is(inverted2, 1)
-})
-
-test('Inverting test with decimals', t => {
-  const inverted = getInverseDistance(1.00001)
-  t.is(inverted, -1.00001)
-
-  const inverted2 = getInverseDistance(-1.00001)
-  t.is(inverted2, 1.00001)
+    const outP = destination(p1, radiansDistance, bearing)
+    t.is(outP.x, 10)
+    t.is(outP.y, 6.09219391454593e-16)
 })

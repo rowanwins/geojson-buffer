@@ -1,6 +1,6 @@
 const path = require('path')
 const Benchmark = require('benchmark')
-const buffer = require('../dist/geojson-buffer').bufferGeoJSON
+const buffer = require('../dist/geojson-buffer.js').bufferGeoJSON
 const PolygonOffset = require('polygon-offset')
 const jsts = require('jsts')
 const loadJsonFile = require('load-json-file')
@@ -14,8 +14,12 @@ const options = {
   }
 }
 
-const polygon = loadJsonFile.sync(path.join(__dirname, 'inputs', 'polygon.json'))
+const polygon = loadJsonFile.sync(path.join(__dirname, 'inputs', 'polyExample.json'))
 
+// geojson-buffer x 1,655 ops/sec ±1.09% (91 runs sampled)
+// polygon-offset x 328 ops/sec ±3.53% (89 runs sampled)
+// jsts x 11,924 ops/sec ±4.22% (81 runs sampled)
+// - Fastest is jsts
 const suite = new Benchmark.Suite('buffer', options)
 suite
   .add('geojson-buffer', function () {

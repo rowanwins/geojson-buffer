@@ -62,13 +62,6 @@ function offSetContour (currentCoords, prevCoords, nextCoords, distance, steps, 
     const outsector = getJoin('round', currentCoords, distance, bearingNextCoords, bearingPrevCoords, steps)
     outCoords = outCoords.concat(outsector)
   } else {
-    const segDistance = calcDistance(point(currentCoords), point(nextCoords), {
-      units: 'degrees'
-    })
-    if (segDistance < distance) {
-      console.log(segDistance, distance)
-      return outCoords
-    }
     const segment = processSegment(currentCoords, nextCoords, distance)
     const prevSegment = processSegment(prevCoords, currentCoords, distance)
     const intersects = checkLineIntersection(segment[0][0], segment[0][1], segment[1][0], segment[1][1], prevSegment[0][0], prevSegment[0][1], prevSegment[1][0], prevSegment[1][1])

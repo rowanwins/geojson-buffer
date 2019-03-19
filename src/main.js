@@ -1,48 +1,36 @@
-import { distanceToDegrees, polygon, multiPolygon } from 'turf'
-import { bufferLine } from './bufferLine'
-import { bufferPolygon } from './bufferPolygon'
-import { bufferPoint } from './bufferPoint'
-import isSimple from 'shamos-hoey'
-import polygonClipping from 'polygon-clipping'
+import { setupStructures } from './setupStructures'
+import { lengthToDegrees, lengthToRadians } from './utils'
+import polygonClipping from 'polygon-clipping/dist/polygon-clipping.esm.js'
 
 export function bufferGeoJSON (geojson, distance, units, steps) {
 
-  if (!geojson) throw new Error('geojson-buffer: Feature is required')
-  if (distance === undefined || distance === null || isNaN(distance)) throw new Error('dgeojson-buffer: Distance is required')
+    if (!geojson) throw new Error('geojson-buffer: Feature is required')
+    if (distance === undefined || distance === null || isNaN(distance)) throw new Error('dgeojson-buffer: Distance is required')
 
-  const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
+    const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
 
-  if ((geometry.type === 'Point' || geometry.type === 'MultiPoint' || geometry.type === 'LineString' || geometry.type === 'MultiLineString') && distance < 0) {
-    throw new Error('geojson-buffer: If offsetting a point or linestring the distance must be positive')
-  }
+    if ((geometry.type === 'Point' || geometry.type === 'MultiPoint' || geometry.type === 'LineString' || geometry.type === 'MultiLineString') && distance < 0) {
+        throw new Error('geojson-buffer: If offsetting a point or linestring the distance must be positive')
+    }
 
-  const numSteps = steps || 64
-  const properties = geojson.properties || {}
+    // const numSteps = steps || 64
+    // const properties = geojson.properties || {}
 
-  const distanceDegrees = distanceToDegrees(distance, units)
+    const distanceDegrees = lengthToDegrees(distance, units)
+    const distanceRadians = lengthToRadians(distance, 'degrees')
 
-  let buffered = null
-  switch (geometry.type) {
-    case 'Polygon':
-    case 'MultiPolygon':
-      buffered = bufferPolygon(geometry, distanceDegrees, numSteps)
-      if (!isSimple(buffered)) {
-        buffered = polygonClipping.union(buffered.geometry.coordinates)
-        buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
-      }
-      break
-    case 'LineString':
-    case 'MultiLineString':
-      buffered = bufferLine(geometry, distanceDegrees, numSteps)
-      if (!isSimple(buffered)) {
-        buffered = polygonClipping.union(buffered.geometry.coordinates)
-        buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
-      }
-      break
-    case 'Point':
-      buffered = bufferPoint(geometry, distanceDegrees, numSteps)
-      break
-  }
-  buffered.properties = properties
-  return buffered
+    // let buffered = null
+
+    const contours = setupStructures(geojson)
+
+    for (var i = 0; i < contours.length; i++) {
+        contours[i].offsetEdges(distanceDegrees)
+        contours[i].rejoinOffsetEdges(distanceDegrees, distanceRadians)
+    }
+
+    const pg = contours[0].outContour.map(function (p) {
+        return [p.x, p.y]
+    })
+
+    return pg
 }

@@ -1,75 +1,70 @@
-import path from 'path'
 import test from 'ava'
-import { bufferGeoJSON } from '../src/main'
-import loadJsonFile from 'load-json-file'
-import write from 'write-json-file'
+import Point from '../src/Point'
 
-import { distance, point } from 'turf'
+test('Point test', t => {
+    const p = new Point([0, 0])
 
-const p = loadJsonFile.sync(path.join(__dirname, 'inputs', 'point.json'))
-
-test('Point test -- expected outputs', t => {
-  const output = bufferGeoJSON(p, 1, 'kilometers')
-  t.is(output.type, 'Feature')
-  t.is(output.geometry.type, 'Polygon')
-
-  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'point.json'), output)
-  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'point.json'))
-  t.deepEqual(output, expected)
+    t.is(p.x, 0)
+    t.is(p.y, 0)
+    t.is(p.radiansX, 0)
+    t.is(p.radiansY, 0)
+    t.is(p.nextPoint, null)
+    t.is(p.prevPoint, null)
 })
 
-test('Ensure sensible distance', t => {
-  const regPoint = point([0, 0])
-  const output = bufferGeoJSON(regPoint, 1, 'kilometers')
-  const dist = distance(regPoint, point(output.geometry.coordinates[0][0]), {
-    units: 'kilometers'
-  })
-  t.is(dist > 0.99999 && dist < 1.00001, true)
+test('Point x/y to radians', t => {
+    const p = new Point([52.205, 0.119])
 
-  const dist2 = distance(regPoint, point(output.geometry.coordinates[0][30]), {
-    units: 'kilometers'
-  })
-  t.is(dist2 > 0.99999 && dist2 < 1.00001, true)
+    t.is(p.radiansX, 0.9111491360036397)
+    t.is(p.radiansY, 0.0020769418098732523)
 })
 
-test('Ensure sensible distance - Northern latitudes', t => {
-  const northernPoint = point([-100, 70])
-  const output = bufferGeoJSON(northernPoint, 1, 'kilometers')
-  const dist = distance(northernPoint, point(output.geometry.coordinates[0][0]), {
-    units: 'kilometers'
-  })
-  t.is(dist > 0.99999 && dist < 1.00001, true)
+test('Point relationships - convex points', t => {
+    const p = new Point([0, -10])
 
-  // Somewhere a quarter of the way around the buffer
-  const numCoords = Math.floor(output.geometry.coordinates[0].length / 4)
-  const dist2 = distance(northernPoint, point(output.geometry.coordinates[0][numCoords]), {
-    units: 'kilometers'
-  })
-  t.is(dist2 > 0.99999 && dist2 < 1.00001, true)
+    const prevPoint = new Point([-10, 0])
+    const nextPoint = new Point([10, 10])
+
+    p.prevPoint = prevPoint
+    p.nextPoint = nextPoint
+
+    p.calcuateAnglesBetweeenPoints()
+
+    t.is(p.bearingPrevPoint, -45.438548586742314)
+    t.is(p.bearingNextPoint, 26.740205355727124)
+    t.is(p.angleBetweenPoints, 72.17875394246943)
+    t.false(p.isConcave)
 })
 
-test('Distance parameter works', t => {
-  const regPoint = point([0, 0])
-  const output = bufferGeoJSON(regPoint, 2, 'kilometers')
-  const dist = distance(regPoint, point(output.geometry.coordinates[0][0]), {
-    units: 'kilometers'
-  })
-  t.is(dist > 1.99999 && dist < 2.00001, true)
+test('Point relationships - flat points', t => {
+    const p = new Point([0, 0])
+
+    const prevPoint = new Point([-10, 0])
+    const nextPoint = new Point([10, 0])
+
+    p.prevPoint = prevPoint
+    p.nextPoint = nextPoint
+
+    p.calcuateAnglesBetweeenPoints()
+    t.is(p.bearingPrevPoint, -90)
+    t.is(p.bearingNextPoint, 90)
+    t.is(p.angleBetweenPoints, 180)
+    t.false(p.isConcave)
 })
 
-test('Units parameter works', t => {
-  const regPoint = point([0, 0])
-  const output = bufferGeoJSON(regPoint, 2, 'miles')
-  const dist = distance(regPoint, point(output.geometry.coordinates[0][0]), {
-    units: 'miles'
-  })
-  t.is(dist > 1.99999 && dist < 2.00001, true)
-})
+test('Point relationships - concave points', t => {
+    const p = new Point([0, 10])
 
-test('Steps parameter works', t => {
-  const regPoint = point([0, 0])
-  const output = bufferGeoJSON(regPoint, 2, 'miles', 10)
+    const prevPoint = new Point([-10, 0])
+    const nextPoint = new Point([10, 0])
 
-  // Remembering that the fist & last point is duplicated in geojson
-  t.is(output.geometry.coordinates[0].length, 11)
+    p.prevPoint = prevPoint
+    p.nextPoint = nextPoint
+
+    p.calcuateAnglesBetweeenPoints()
+
+    t.is(p.bearingPrevPoint, -134.5614514132577)
+    t.is(p.bearingNextPoint, 134.5614514132577)
+    t.is(p.angleBetweenPoints, 269.1229028265154)
+    t.true(p.isConcave)
 })

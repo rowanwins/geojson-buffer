@@ -1,6 +1,10 @@
 {
     "extends": "standard",
-    "rules": {
-        "padded-blocks": ["off"]
+    "globals": {
+        "L": true
+    },
+     "rules": {
+        "padded-blocks": ["off"],
+        "indent": ["error", 4]
     }
 }
