@@ -67,9 +67,13 @@
     "write-json-file": "^3.0.2"
   },
   "dependencies": {
+    "delaunator": "^3.0.2",
+    "earcut": "^2.1.5",
     "leaflet": "^1.4.0",
     "libtess": "^1.2.2",
-    "polygon-clipping": "^0.12.2",
-    "shamos-hoey": "0.0.5"
+    "martinez-polygon-clipping": "^0.5.0",
+    "polybooljs": "^1.2.0",
+    "polygon-clipping": "^0.14.0",
+    "shamos-hoey": "0.0.9"
   }
 }

@@ -17,20 +17,17 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
     // const properties = geojson.properties || {}
 
     const distanceDegrees = lengthToDegrees(distance, units)
-    const distanceRadians = lengthToRadians(distance, 'degrees')
+    const distanceRadians = lengthToRadians(distanceDegrees, 'degrees')
 
     // let buffered = null
 
     const contours = setupStructures(geojson)
-
+    const out = []
     for (var i = 0; i < contours.length; i++) {
         contours[i].offsetEdges(distanceDegrees)
         contours[i].rejoinOffsetEdges(distanceDegrees, distanceRadians)
+        out.push(contours[i].removeGlobalIntersections())
     }
 
-    const pg = contours[0].outContour.map(function (p) {
-        return [p.x, p.y]
-    })
-
-    return pg
+    return out[0]
 }

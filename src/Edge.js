@@ -8,6 +8,7 @@ export default class Edge {
 
         this.offsetPoint1 = null
         this.offsetPoint2 = null
+        this.edgeLengthRadians = this.getEdgeLengthInRadians()
     }
 
     offsetEdge (distance) {
@@ -31,7 +32,7 @@ export default class Edge {
     }
 
     getEdgeLengthInRadians () {
-        this.edgeLength = distanceRadiansBetweenPoints(this.point1, this.point2)
+        return distanceRadiansBetweenPoints(this.point1, this.point2)
     }
 
 }

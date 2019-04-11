@@ -43,12 +43,12 @@ export default {
     }
   },
   mounted () {
-    const layer = L.geoJSON(poly)
+    const orig = L.geoJSON(poly)
     let map = window.map = L.map('app', {
       crs: L.CRS.Simple
-    }).fitBounds(layer.getBounds())  
+    }).fitBounds(orig.getBounds())  
 
-    layer.addTo(map)
+    orig.addTo(map)
 
     buffered = L.geoJSON([]).addTo(map)
     this.setBuffer()
@@ -71,7 +71,10 @@ export default {
     },
     bufferFeature: function (f) {
       let out = bufferGeoJSON(f, 100, 'kilometers', this.steps)
-
+      // console.log(JSON.stringify({
+      //   type: 'MultiPolygon',
+      //   coordinates: out
+      // }))
       buffered.addData({
         type: 'MultiPolygon',
         coordinates: out
