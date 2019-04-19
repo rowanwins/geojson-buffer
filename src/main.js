@@ -33,14 +33,14 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
       break
     case 'LineString':
     case 'MultiLineString':
-      buffered = bufferLine(geometry, distanceDegrees, numSteps)
+      buffered = bufferLine(geometry, distanceDegrees, numSteps * 2)
       if (!isSimple(buffered)) {
         buffered = polygonClipping.union(buffered.geometry.coordinates)
         buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
       }
       break
     case 'Point':
-      buffered = bufferPoint(geometry, distanceDegrees, numSteps)
+      buffered = bufferPoint(geometry, distanceDegrees, numSteps * 4)
       break
   }
   buffered.properties = properties
