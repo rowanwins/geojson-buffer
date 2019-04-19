@@ -24,7 +24,7 @@ export function bufferGeoJSON(geojson, distance, units, steps) {
     )
   }
 
-  const numSteps = steps || 64
+  const numSteps = steps || 8
   const properties = geojson.properties || {}
 
   const distanceDegrees = distanceToDegrees(distance, units)
@@ -42,7 +42,7 @@ export function bufferGeoJSON(geojson, distance, units, steps) {
       break
     case 'LineString':
     case 'MultiLineString':
-      buffered = bufferLine(geometry, distanceDegrees, numSteps * 2)
+      buffered = bufferLine(geometry, distanceDegrees, numSteps)
       if (!isSimple(buffered)) {
         buffered = polygonClipping.union(buffered.geometry.coordinates)
         buffered =
@@ -50,7 +50,7 @@ export function bufferGeoJSON(geojson, distance, units, steps) {
       }
       break
     case 'Point':
-      buffered = bufferPoint(geometry, distanceDegrees, numSteps * 4)
+      buffered = bufferPoint(geometry, distanceDegrees, numSteps)
       break
   }
   buffered.properties = properties

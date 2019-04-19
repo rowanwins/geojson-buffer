@@ -53,7 +53,8 @@ function processContour(contour, distance, steps) {
         distance,
         bearingNextCoords,
         bearingNextCoords,
-        steps
+        // We treat end of line as 180 angle
+        steps * 2
       )
       outCoords = outCoords.concat(startEndcap)
 
@@ -67,7 +68,8 @@ function processContour(contour, distance, steps) {
         distance,
         bearingPrevCoords,
         bearingPrevCoords,
-        steps
+        // We treat end of line as 180 angle
+        steps * 2
       )
 
       // Handle the middle segments
@@ -87,7 +89,7 @@ function processContour(contour, distance, steps) {
           distance,
           bearingNextCoords,
           bearingPrevCoords,
-          steps
+          Math.max(1, Math.round(steps * (180 - angleInDegs) / 90))
         )
         outCoords = outCoords.concat(outsector)
 
@@ -128,6 +130,7 @@ function processContour(contour, distance, steps) {
         )
         outCoords.push([intersects.x, intersects.y])
 
+        console.log(angleInDegs)
         // Handle the reverse side of the line
         const outsector = getJoin(
           'round',
@@ -135,7 +138,7 @@ function processContour(contour, distance, steps) {
           distance,
           bearingPrevCoords,
           bearingNextCoords,
-          steps
+          Math.max(1, Math.round(steps * (angleInDegs - 180) / 90))
         )
         otherSideOutCoords = otherSideOutCoords.concat(outsector.reverse())
       }

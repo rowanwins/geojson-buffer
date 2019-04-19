@@ -112,7 +112,7 @@ function offSetContour(
       distance,
       bearingNextCoords,
       bearingPrevCoords,
-      steps
+      Math.max(1, Math.round(steps * (180 - angleInDegs) / 90))
     )
     outCoords = outCoords.concat(outsector)
   } else {
@@ -120,7 +120,6 @@ function offSetContour(
       units: 'degrees'
     })
     if (segDistance < distance) {
-      console.log(segDistance, distance)
       return outCoords
     }
     const segment = processSegment(currentCoords, nextCoords, distance)

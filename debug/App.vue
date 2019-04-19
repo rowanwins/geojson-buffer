@@ -24,6 +24,8 @@
         :step="1"
         @on-input="setBuffer"
       ></Slider>
+      <h3>Stats</h3>
+      <p>Vertices: {{ vertices }}</p>
     </Col>
     <Col span="18">
       <div id="map"></div>
@@ -35,9 +37,12 @@
 import { gj } from './demoFeatures'
 import { bufferGeoJSON } from '../src/main'
 import buffer from './buffer'
+import explode from 'turf/src/explode'
+import circle from 'turf/src/circle'
 
 let map = null
 let buffered = null
+let helper = null
 let library = bufferGeoJSON
 export default {
   name: 'app',
@@ -45,7 +50,8 @@ export default {
     return {
       library: 'geojson',
       slideVal: 40,
-      steps: 4
+      steps: 4,
+      vertices: 0
     }
   },
   mounted() {
@@ -65,7 +71,12 @@ export default {
       }
     }).addTo(map)
     map.fitBounds(orig.getBounds())
-    buffered = L.geoJSON([]).addTo(map)
+    buffered = L.geoJSON([], {
+      pointToLayer: function(feature, latlng) {
+        return new L.CircleMarker(latlng, {radius: 0.1, color: 'red'});
+      }
+    }).addTo(map)
+    helper = L.geoJSON([]).addTo(map)
     this.setBuffer()
   },
   methods: {
@@ -82,6 +93,9 @@ export default {
     },
     setBuffer: function() {
       buffered.clearLayers()
+      helper.clearLayers()
+      this.vertices = 0
+
       gj.features.forEach(function(f) {
         try {
           if (this.slideVal < 0 && f.geometry.type === 'Polygon') {
@@ -95,17 +109,20 @@ export default {
       }, this)
     },
     bufferFeature: function(f) {
+      let out
       if (this.library === 'geojson') {
-        const out = bufferGeoJSON(f, this.slideVal, 'meters', this.steps)
-        buffered.addData(out)
+        out = bufferGeoJSON(f, this.slideVal, 'meters', this.steps)
       } else {
         console.log(this.steps)
-        const out = buffer(f, this.slideVal, {
+        out = buffer(f, this.slideVal, {
           units: 'meters',
           steps: this.steps
         })
-        buffered.addData(out)
       }
+      buffered.addData(out)
+      const exploded = explode(out)
+      buffered.addData(exploded)
+      this.vertices += exploded.features.length
     }
   }
 }
