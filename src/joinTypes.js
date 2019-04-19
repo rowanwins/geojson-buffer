@@ -86,7 +86,7 @@ function createArc(center, radius, startVertex, endVertex, segments, outwards) {
 
   const segmentAngle = (PI2 - angle) / segments
 
-  for (var i = 1; i < segments + 1; ++i) {
+  for (var i = 0; i < segments + 1; ++i) {
     angle = startAngle + segmentAngle * i
     outVertices.push([
       center[0] + Math.cos(angle) * radius,
