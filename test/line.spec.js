@@ -6,17 +6,26 @@ import write from 'write-json-file'
 
 import { point, lineString, distance } from 'turf'
 
-const lineHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'linestring.json'))
-const lineTouchingHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'linestringTouching.json'))
-const multiLineHarness = loadJsonFile.sync(path.join(__dirname, 'inputs', 'multiline.json'))
+const lineHarness = loadJsonFile.sync(
+  path.join(__dirname, 'inputs', 'linestring.json')
+)
+const lineTouchingHarness = loadJsonFile.sync(
+  path.join(__dirname, 'inputs', 'linestringTouching.json')
+)
+const multiLineHarness = loadJsonFile.sync(
+  path.join(__dirname, 'inputs', 'multiline.json')
+)
 
 test('Polyline test', t => {
   const output = bufferGeoJSON(lineHarness, 1, 'kilometers')
   t.is(output.type, 'Feature')
   t.is(output.geometry.type, 'Polygon')
 
-  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'linestring.json'), output)
-  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'linestring.json'))
+  if (process.env.REGEN)
+    write.sync(path.join(__dirname, 'outputs', 'linestring.json'), output)
+  const expected = loadJsonFile.sync(
+    path.join(__dirname, 'outputs', 'linestring.json')
+  )
   t.deepEqual(output, expected)
 })
 
@@ -25,8 +34,11 @@ test('MultiLine test', t => {
   t.is(output.type, 'Feature')
   t.is(output.geometry.type, 'MultiPolygon')
 
-  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'multiLineHarness.json'), output)
-  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'multiLineHarness.json'))
+  if (process.env.REGEN)
+    write.sync(path.join(__dirname, 'outputs', 'multiLineHarness.json'), output)
+  const expected = loadJsonFile.sync(
+    path.join(__dirname, 'outputs', 'multiLineHarness.json')
+  )
   t.deepEqual(output, expected)
 })
 
@@ -35,24 +47,38 @@ test('Polyline touching test', t => {
   t.is(output.type, 'Feature')
   t.is(output.geometry.type, 'Polygon')
 
-  if (process.env.REGEN) write.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'), output)
-  const expected = loadJsonFile.sync(path.join(__dirname, 'outputs', 'linestringTouching.json'))
+  if (process.env.REGEN)
+    write.sync(
+      path.join(__dirname, 'outputs', 'linestringTouching.json'),
+      output
+    )
+  const expected = loadJsonFile.sync(
+    path.join(__dirname, 'outputs', 'linestringTouching.json')
+  )
   t.deepEqual(output, expected)
 })
 
 test('Distance parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'kilometers')
-  const dist = distance(point(lineHarness.geometry.coordinates[0]), point(output.geometry.coordinates[0][32]), {
-    units: 'kilometers'
-  })
+  const dist = distance(
+    point(lineHarness.geometry.coordinates[0]),
+    point(output.geometry.coordinates[0][32]),
+    {
+      units: 'kilometers'
+    }
+  )
   t.is(dist > 1.95 && dist < 2.05, true)
 })
 
 test('Units parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'miles')
-  const dist = distance(point(lineHarness.geometry.coordinates[0]), point(output.geometry.coordinates[0][32]), {
-    units: 'miles'
-  })
+  const dist = distance(
+    point(lineHarness.geometry.coordinates[0]),
+    point(output.geometry.coordinates[0][32]),
+    {
+      units: 'miles'
+    }
+  )
   t.is(dist > 1.95 && dist < 2.05, true)
 })
 

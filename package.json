@@ -11,6 +11,7 @@
     "build:docs": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "rollup -c",
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "format": "prettier '**/*.{js,vue}' --no-semi --write --single-quote",
     "test": "ava --verbose",
     "test:regen": "cross-env REGEN=true ava"
   },
@@ -49,6 +50,7 @@
     "jsts": "^2.0.3",
     "load-json-file": "^5.1.0",
     "polygon-offset": "^0.3.1",
+    "prettier": "^1.17.0",
     "rollup": "^0.65.2",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-butternut": "^0.1.0",

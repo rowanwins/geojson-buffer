@@ -5,15 +5,23 @@ import { bufferPoint } from './bufferPoint'
 import isSimple from 'shamos-hoey'
 import polygonClipping from 'polygon-clipping'
 
-export function bufferGeoJSON (geojson, distance, units, steps) {
-
+export function bufferGeoJSON(geojson, distance, units, steps) {
   if (!geojson) throw new Error('geojson-buffer: Feature is required')
-  if (distance === undefined || distance === null || isNaN(distance)) throw new Error('dgeojson-buffer: Distance is required')
+  if (distance === undefined || distance === null || isNaN(distance))
+    throw new Error('dgeojson-buffer: Distance is required')
 
   const geometry = geojson.type === 'Feature' ? geojson.geometry : geojson
 
-  if ((geometry.type === 'Point' || geometry.type === 'MultiPoint' || geometry.type === 'LineString' || geometry.type === 'MultiLineString') && distance < 0) {
-    throw new Error('geojson-buffer: If offsetting a point or linestring the distance must be positive')
+  if (
+    (geometry.type === 'Point' ||
+      geometry.type === 'MultiPoint' ||
+      geometry.type === 'LineString' ||
+      geometry.type === 'MultiLineString') &&
+    distance < 0
+  ) {
+    throw new Error(
+      'geojson-buffer: If offsetting a point or linestring the distance must be positive'
+    )
   }
 
   const numSteps = steps || 64
@@ -28,7 +36,8 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
       buffered = bufferPolygon(geometry, distanceDegrees, numSteps)
       if (!isSimple(buffered)) {
         buffered = polygonClipping.union(buffered.geometry.coordinates)
-        buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
+        buffered =
+          buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
       }
       break
     case 'LineString':
@@ -36,7 +45,8 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
       buffered = bufferLine(geometry, distanceDegrees, numSteps * 2)
       if (!isSimple(buffered)) {
         buffered = polygonClipping.union(buffered.geometry.coordinates)
-        buffered = buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
+        buffered =
+          buffered.length === 1 ? polygon(buffered[0]) : multiPolygon(buffered)
       }
       break
     case 'Point':
