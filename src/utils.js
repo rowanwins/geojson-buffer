@@ -65,5 +65,5 @@ export function checkLineIntersection(
 }
 
 export function getInverseDistance(dist) {
-  return dist > 0 ? -Math.abs(dist) : Math.abs(dist)
+  return -dist
 }

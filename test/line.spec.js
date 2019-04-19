@@ -62,7 +62,7 @@ test('Distance parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'kilometers')
   const dist = distance(
     point(lineHarness.geometry.coordinates[0]),
-    point(output.geometry.coordinates[0][32]),
+    point(output.geometry.coordinates[0][6]),
     {
       units: 'kilometers'
     }
@@ -74,7 +74,7 @@ test('Units parameter works', t => {
   const output = bufferGeoJSON(lineHarness, 2, 'miles')
   const dist = distance(
     point(lineHarness.geometry.coordinates[0]),
-    point(output.geometry.coordinates[0][32]),
+    point(output.geometry.coordinates[0][6]),
     {
       units: 'miles'
     }
@@ -85,6 +85,6 @@ test('Units parameter works', t => {
 test('Steps parameter works', t => {
   const segment = lineString([[0, 0], [0, 1]])
   const output = bufferGeoJSON(segment, 2, 'miles', 10)
-  // Remembering that the fist & last point is duplicated in geojson
-  t.is(output.geometry.coordinates[0].length, 21)
+  // Number of points depends on angles
+  t.is(output.geometry.coordinates[0].length, 43)
 })

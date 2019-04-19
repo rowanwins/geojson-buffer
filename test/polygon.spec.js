@@ -115,16 +115,16 @@ test('Units parameter works', t => {
 test('Steps parameter works', t => {
   const box = polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'miles', 10)
-  // Remembering that the fist & last point is duplicated in geojson
-  t.is(output.geometry.coordinates[0].length, 41)
+  // Number of points depends on angles in polygon
+  t.is(output.geometry.coordinates[0].length, 45)
 })
 
 test('Incorrectly winding polygon works', t => {
   const box = polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
   const output = bufferGeoJSON(box, 2, 'miles', 10)
 
-  // Remembering that the fist & last point is duplicated in geojson
-  t.is(output.geometry.coordinates[0].length, 41)
+  // Number of points depends on angles in polygon
+  t.is(output.geometry.coordinates[0].length, 45)
 
   // Don't mutate the inputs
   t.deepEqual(box.geometry.coordinates, [
@@ -138,7 +138,8 @@ test('Polygon with hole works', t => {
     [[0.2, 0.2], [0.2, 0.4], [0.4, 0.4], [0.4, 0.2], [0.2, 0.2]]
   ])
   const output = bufferGeoJSON(boxWithHole, 2, 'miles', 10)
-  t.is(output.geometry.coordinates[0].length, 41)
+  // Number of points depends on angles in polygon
+  t.is(output.geometry.coordinates[0].length, 45)
   t.is(output.geometry.coordinates[1].length, 5)
 })
 

@@ -50,7 +50,7 @@ export default {
     return {
       library: 'geojson',
       slideVal: 40,
-      steps: 4,
+      steps: 2,
       vertices: 0
     }
   },

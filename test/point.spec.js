@@ -82,5 +82,5 @@ test('Steps parameter works', t => {
   const output = bufferGeoJSON(regPoint, 2, 'miles', 10)
 
   // Remembering that the fist & last point is duplicated in geojson
-  t.is(output.geometry.coordinates[0].length, 11)
+  t.is(output.geometry.coordinates[0].length, 41)
 })
