@@ -1,5 +1,10 @@
+const len = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1]
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0]
+const vec = (a, b) => [b[0] - a[0], b[1] - a[1]]
+
 /**
- * Process Segment
+ * Offset Segment
  * Inspiration taken from http://stackoverflow.com/questions/2825412/draw-a-parallel-line
  *
  * @private
@@ -8,48 +13,48 @@
  * @param {number} offset Offset
  * @returns {Array<Array<number>>} offset points
  */
-export function processSegment (point1, point2, offset) {
-  var L = Math.sqrt((point1[0] - point2[0]) * (point1[0] - point2[0]) + (point1[1] - point2[1]) * (point1[1] - point2[1]))
+export function offsetSegment(point1, point2, offset) {
+  const L = len(point1, point2)
 
-  var out1x = point1[0] + offset * (point2[1] - point1[1]) / L
-  var out2x = point2[0] + offset * (point2[1] - point1[1]) / L
-  var out1y = point1[1] + offset * (point1[0] - point2[0]) / L
-  var out2y = point2[1] + offset * (point1[0] - point2[0]) / L
+  const out1x = point1[0] + (offset * (point2[1] - point1[1])) / L
+  const out2x = point2[0] + (offset * (point2[1] - point1[1])) / L
+  const out1y = point1[1] + (offset * (point1[0] - point2[0])) / L
+  const out2y = point2[1] + (offset * (point1[0] - point2[0])) / L
+
   return [[out1x, out1y], [out2x, out2y]]
 }
 
-/**
- * Check if lines intersect
- *
- * @private
- * @param {Array<number>} point1 Point coordinates
- * @param {Array<number>} point2 Point coordinates
- * @returns {Array<Array<number>>} offset points
- */
-export function checkLineIntersection (line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
-  var denominator, a, b, numerator1, numerator2, result
-  result = {
-    x: null,
-    y: null,
-    onLine1: false,
-    onLine2: false
+export function angle(a, b, c) {
+  const v1 = vec(b, a)
+  const v2 = vec(b, c)
+  const angle = Math.atan2(cross(v1, v2), dot(v1, v2))
+  if (angle < 0) {
+    return angle + Math.PI * 2
   }
-  denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY))
-  if (denominator === 0) return result
-  a = line1StartY - line2StartY
-  b = line1StartX - line2StartX
-  numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b)
-  numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b)
-  a = numerator1 / denominator
-  b = numerator2 / denominator
-
-  result.x = line1StartX + (a * (line1EndX - line1StartX))
-  result.y = line1StartY + (a * (line1EndY - line1StartY))
-
-  if (a > 0 && a < 1) result.onLine1 = true
-  return result
+  return angle
 }
 
-export function getInverseDistance (dist) {
-  return dist > 0 ? -Math.abs(dist) : Math.abs(dist)
+export function roundJoin(center, distance, start, end, steps) {
+  const outVertices = []
+
+  const PI2 = Math.PI * 2
+  let startAngle = Math.atan2(start[1] - center[1], start[0] - center[0])
+  let endAngle = Math.atan2(end[1] - center[1], end[0] - center[0])
+
+  if (startAngle < 0) startAngle += PI2
+  if (endAngle < 0) endAngle += PI2
+
+  var angle =
+    startAngle > endAngle ? startAngle - endAngle : startAngle + PI2 - endAngle
+
+  const segmentAngle = (PI2 - angle) / steps
+
+  for (var i = 0; i < steps + 1; i += 1) {
+    angle = startAngle + segmentAngle * i
+    outVertices.push([
+      center[0] + Math.cos(angle) * distance,
+      center[1] + Math.sin(angle) * distance
+    ])
+  }
+  return outVertices
 }
