@@ -16,7 +16,7 @@
 
 <script>
 import { gj } from './demoFeatures'
-import { bufferGeoJSON } from '../src/main'
+import { bufferGeoJSON } from '../../src/main'
 
 let map = null
 let buffered = null
