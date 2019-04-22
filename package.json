@@ -8,8 +8,8 @@
   },
   "scripts": {
     "bench": "npm run build && node test/benchmark.js",
-    "build:docs": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "rollup -c",
+    "build:docs": "cross-env webpack --config debug/webpack.config.js --env.NODE_ENV=production --progress --hide-modules",
     "dev": "cross-env webpack-dev-server --config debug/webpack.config.js --env.NODE_ENV=development --open --hot",
     "test": "ava --verbose",
     "test:regen": "cross-env REGEN=true ava"
