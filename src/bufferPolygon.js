@@ -66,7 +66,6 @@ function offSetContour (currentCoords, prevCoords, nextCoords, distance, steps, 
       units: 'degrees'
     })
     if (segDistance < distance) {
-      console.log(segDistance, distance)
       return outCoords
     }
     const segment = processSegment(currentCoords, nextCoords, distance)

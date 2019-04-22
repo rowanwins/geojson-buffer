@@ -1,7 +1,7 @@
 # geojson-buffer
 A buffering algorithm for geojson.
 
-### [Demo](https://rowanwins.github.io/geojson-buffer/index.html)
+### [Demo](https://rowanwins.github.io/geojson-buffer/debug/index.html)
 
 ## Documentation
 Valid inputs: Geojson features
