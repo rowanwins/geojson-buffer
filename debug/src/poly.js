@@ -1,4 +1,4 @@
-export const poly =     {
+export const poly = {
       "properties": {},
       "type": "Feature",
       "geometry": {

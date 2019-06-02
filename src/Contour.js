@@ -4,9 +4,6 @@ import { debugWindingNumbers, debugSkippedEdge, debugOffsetEdges, debugWeirdPoin
 import polygonClipping from 'polygon-clipping/dist/polygon-clipping.esm.js'
 import * as martinez from 'martinez-polygon-clipping'
 import shamosHoey from 'shamos-hoey'
-import earcut from 'earcut'
-import Delaunator from 'delaunator'
-import { triangulate } from './tess'
 
 export default class Contour {
 
@@ -36,14 +33,14 @@ export default class Contour {
 
             const p1 = e.point1
             const p2 = e.point2
-            // if (p2.angleBetweenPoints > 290) {
-            //     // debugWeirdPoint(e)
-            //     if (distanceRadiansBetweenPoints(p1, e.nextEdge.point2) < bufferDistanceDoubled) {
-            //         this.outContour.push(e.getIntersection(e.prevEdge))
-            //         i++
-            //         continue
-            //     }
-            // }
+            if (p2.angleBetweenPoints > 290) {
+                // debugWeirdPoint(e)
+                if (distanceRadiansBetweenPoints(p1, e.nextEdge.point2) < bufferDistanceDoubled) {
+                    this.outContour.push(e.getIntersection(e.prevEdge))
+                    i++
+                    continue
+                }
+            }
 
             if (p1.isConcave) {
                 this.outContour.push(e.getIntersection(e.prevEdge))
@@ -55,51 +52,34 @@ export default class Contour {
     }
 
     removeGlobalIntersections () {
-        // const pg = this.outContour.map(function (p) {
-        //     return [p.x, p.y]
-        // })
-        // const triangleVerts = triangulate([pg])
-        // // console.log(triangleVerts)
-
-        // var out = []
-        // for (let i = 0; i < triangleVerts.length; i = i + 2) {
-        //     out.push([triangleVerts[i], triangleVerts[i + 1]])
-        // }
-        // // console.log(out)
-        // return [[out]]
-
-        const pg = []
+        let pg = [[]]
         for (var i = 0; i < this.outContour.length; i++) {
-            pg.push(this.outContour[i].x)
-            pg.push(this.outContour[i].y)
+            pg[0].push([this.outContour[i].x, this.outContour[i].y])
         }
-        var result = earcut(pg)
-        var triangles = []
-        for (i = 0; i < result.length; i++) {
-            var index = result[i]
-            triangles.push([pg[index * 2], pg[index * 2 + 1]])
-        }
+        return pg
+        // const ip = shamosHoey({
+        //     type: 'Polygon',
+        //     coordinates: pg
+        // }, {
+        //     booleanOnly: false
+        // })
+        // console.log(ip)
+        // if (ip.length === 0) {
+        //     return pg
+        // } else if (ip.length === 1) {
+        //     let indicesFirst = ip[0].segmentIndices
+        //     pg[0].splice(indicesFirst[0], (indicesFirst[1] - indicesFirst[0]) + 1, [ip[0].x, ip[0].y])
+        //     return pg
+        // } else {
+        //     const indicesFirst = ip[0].segmentIndices
+        //     const indicesSecond = ip[1].segmentIndices
+        //     let hole = pg[0].splice(indicesSecond[0] + 1, indicesSecond[1] - indicesSecond[0])
+        //     hole = [[ip[1].x, ip[1].y], ...hole, [ip[1].x, ip[1].y]]
 
-        debugTriangulation(triangles)
-        // return polygonClipping.union([pg])
-        // const ip = []
-        // // const ip = shamosHoey({ type: 'Polygon', coordinates: [pg] }, {
-        // //     booleanOnly: false
-        // // })
-        // if (ip.length === 0) return [[pg]]
-        // const goUntil = ip[0].segmentIndex1
-        // const restart = ip[0].segmentIndex2
-
-        // const finalOut = []
-        // for (var i = 0; i < goUntil; i++) {
-        //     finalOut.push(pg[i])
+        //     const countOfRemainderToRemove = (indicesSecond[0] - indicesFirst[0]) + (indicesFirst[1] - indicesSecond[1]) + 1
+        //     pg[0].splice(indicesFirst[0], countOfRemainderToRemove, [ip[0].x, ip[0].y])
+        //     pg[0].push(hole)
+        //     return pg
         // }
-
-        // finalOut.push([ip[0].coords.x, ip[0].coords.y])
-
-        // for (var i = restart + 1; i < pg.length; i++) {
-        //     finalOut.push(pg[i])
-        // }
-        // return [[finalOut]]
     }
 }

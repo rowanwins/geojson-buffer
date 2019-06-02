@@ -15,7 +15,8 @@
 </template>
 
 <script>
-import { poly } from './poly'
+// const poly = require('../../test/inputs/warsaw.json') 
+import { poly } from './poly2'
 import { bufferGeoJSON } from '../../src/main'
 
 import L from 'leaflet'
@@ -43,12 +44,13 @@ export default {
     }
   },
   mounted () {
+    // console.log(poly)
     const orig = L.geoJSON(poly)
     let map = window.map = L.map('app', {
       crs: L.CRS.Simple
     }).fitBounds(orig.getBounds())  
 
-    orig.addTo(map)
+    // orig.addTo(map)
 
     buffered = L.geoJSON([]).addTo(map)
     this.setBuffer()
@@ -70,15 +72,15 @@ export default {
       // }, this)
     },
     bufferFeature: function (f) {
-      let out = bufferGeoJSON(f, 100, 'kilometers', this.steps)
+      let out = bufferGeoJSON(f, this.slideVal, 'kilometers', this.steps)
       // console.log(JSON.stringify({
       //   type: 'MultiPolygon',
       //   coordinates: out
       // }))
-      buffered.addData({
-        type: 'MultiPolygon',
-        coordinates: out
-      })  
+      // buffered.addData({
+      //   type: 'MultiPolygon',
+      //   coordinates: out
+      // })  
       // buffered.addData({
       //   type: 'Polygon',
       //   coordinates: [out.map(function (e) {

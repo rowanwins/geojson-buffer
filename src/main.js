@@ -29,5 +29,6 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
         out.push(contours[i].removeGlobalIntersections())
     }
 
-    return out[0]
+    return polygonClipping.union(out)
+    // return out
 }
