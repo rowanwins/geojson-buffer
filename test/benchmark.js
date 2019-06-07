@@ -24,7 +24,7 @@ const polygon = loadJsonFile.sync(path.join(__dirname, 'inputs', 'polyExample.js
 const suite = new Benchmark.Suite('buffer', options)
 suite
     .add('geojson-buffer', function () {
-        buffer(polygon, 1, 'miles')
+        buffer(polygon, 1, 'degrees')
     })
     .add('polygon-offset', function () {
         const offset = new PolygonOffset()

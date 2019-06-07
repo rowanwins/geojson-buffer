@@ -25,11 +25,12 @@ export function createRounded (coords, distance, distanceRadians, bearingNextCoo
     return createArc(coords, distance, bearingPrevCoords, bearingNextCoords, numSteps, false)
 }
 
+const PI2 = Math.PI * 2
+
 function createArc (center, radius, startVertex, endVertex, segments, outwards) {
     const outVertices = []
-    const PI2 = Math.PI * 2
-    let startAngle = Math.atan2(startVertex.y - center.y, startVertex.x - center.x)
-    let endAngle = Math.atan2(endVertex.y - center.y, endVertex.x - center.x)
+    let startAngle = Math.atan2(startVertex[1] - center.y, startVertex[0] - center.x)
+    let endAngle = Math.atan2(endVertex[1] - center.y, endVertex[0] - center.x)
 
     if (startAngle < 0) startAngle += PI2
     if (endAngle < 0) endAngle += PI2
@@ -42,10 +43,10 @@ function createArc (center, radius, startVertex, endVertex, segments, outwards) 
 
     for (var i = 1; i < segments + 1; ++i) {
         angle = startAngle + segmentAngle * i
-        outVertices.push(new Point([
+        outVertices.push([
             center.x + Math.cos(angle) * radius,
             center.y + Math.sin(angle) * radius
-        ]))
+        ])
     }
     return outVertices
 }

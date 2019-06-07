@@ -15,7 +15,7 @@ module.exports = {
                 loader: 'json-loader'
             },
             {
-                test: /\.(png|jpg|gif)$/,
+                test: /\.(png|jpg|gif|woff(2)?|ttf|eot|svg)$/,
                 use: [
                     {
                         loader: 'file-loader',

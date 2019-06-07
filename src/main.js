@@ -1,6 +1,7 @@
 import { setupStructures } from './setupStructures'
 import { lengthToDegrees, lengthToRadians } from './utils'
-import polygonClipping from 'polygon-clipping/dist/polygon-clipping.esm.js'
+import { removeGlobalIntersections } from './removeIntersection'
+import shamosHoey from './lib/shamosHoey'
 
 export function bufferGeoJSON (geojson, distance, units, steps) {
 
@@ -13,22 +14,28 @@ export function bufferGeoJSON (geojson, distance, units, steps) {
         throw new Error('geojson-buffer: If offsetting a point or linestring the distance must be positive')
     }
 
-    // const numSteps = steps || 64
-    // const properties = geojson.properties || {}
+    const numSteps = steps || 32
+    const properties = geojson.properties || {}
 
     const distanceDegrees = lengthToDegrees(distance, units)
     const distanceRadians = lengthToRadians(distanceDegrees, 'degrees')
 
-    // let buffered = null
-
     const contours = setupStructures(geojson)
-    const out = []
+    const rawOffsetCoords = []
+
     for (var i = 0; i < contours.length; i++) {
-        contours[i].offsetEdges(distanceDegrees)
-        contours[i].rejoinOffsetEdges(distanceDegrees, distanceRadians)
-        out.push(contours[i].removeGlobalIntersections())
+        rawOffsetCoords.push(contours[i].createRawOffset(distanceDegrees, distanceRadians, numSteps))
     }
 
-    return polygonClipping.union(out)
-    // return out
+    const intersectionPoints = shamosHoey({
+        type: 'Polygon',
+        coordinates: rawOffsetCoords
+    }, {
+        booleanOnly: false
+    })
+
+    if (intersectionPoints.length === 0) return rawOffsetCoords
+    return removeGlobalIntersections(rawOffsetCoords, intersectionPoints)
+
+    // return polygonClipping.union(out)
 }

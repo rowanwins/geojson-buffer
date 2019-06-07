@@ -7,7 +7,7 @@ export function offsetEdge (point1, point2, offset) {
     var out2x = point2.x + offset * (point2.y - point1.y) / L
     var out1y = point1.y + offset * (point1.x - point2.x) / L
     var out2y = point2.y + offset * (point1.x - point2.x) / L
-    return [new Point([out1x, out1y]), new Point([out2x, out2y])]
+    return [[out1x, out1y], [out2x, out2y]]
 }
 
 export function processSegment (point1, point2, offset) {
@@ -35,7 +35,7 @@ export function checkLineIntersection (line1StartX, line1StartY, line1EndX, line
     result[0] = line1StartX + (a * (line1EndX - line1StartX))
     result[1] = line1StartY + (a * (line1EndY - line1StartY))
     // if (a > 0 && a < 1) return false
-    return new Point(result)
+    return result
 }
 
 export function getInverseDistance (dist) {

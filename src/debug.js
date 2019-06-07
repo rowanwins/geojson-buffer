@@ -40,7 +40,7 @@ export function debugOffsetEdges (edges) {
     const linesGroup = L.layerGroup([]).addTo(map)
 
     edges.forEach(function (edge) {
-        L.polyline([[edge.offsetPoint1.y, edge.offsetPoint1.x], [edge.offsetPoint2.y, edge.offsetPoint2.x]], {
+        L.polyline([[edge.point1.y, edge.point1.x], [edge.point2.y, edge.point2.x]], {
             color: 'red'
         }).addTo(linesGroup)
     })
